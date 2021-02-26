@@ -57,7 +57,7 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `mdspyutils` for local development.
+Ready to contribute? Here's how to set up `mdspyutils` for local development using [Github Flow](https://blog.programster.org/git-workflows).
 
 1. Fork the `mdspyutils` repo on GitHub.
 2. Clone your fork locally::
