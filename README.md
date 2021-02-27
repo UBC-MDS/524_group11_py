@@ -4,7 +4,7 @@
 [![Project Status: Concept – Minimal or no implementation has been done yet](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#concept)
 
 
-A Python package to help MDS students manage their labs in iPython notebooks and R markdown.
+`labzen` is a Python package that adds more [zen](https://en.wikipedia.org/wiki/Zen) to your student experience of working on [MDS](https://masterdatascience.ubc.ca/) labs. It lets you manage common tasks such as counting total marks in an assigment, and performs common checks for mechanics in your iPython notebooks and R markdown assignments.
 
 ## Installation
 
