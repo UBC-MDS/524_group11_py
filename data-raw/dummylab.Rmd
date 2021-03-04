@@ -1,0 +1,89 @@
+---
+title: DSCI 999 Lab 2 - Another Lab
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+This lab has a total of 20 points: 14 required, and 6 optionals.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at massa a quam posuere elementum at nec lectus. Vivamus in pharetra neque. Vivamus sit amet enim sed lorem imperdiet pretium. Vestibulum dignissim facilisis neque non rhoncus. Vestibulum facilisis egestas nulla in molestie. Pellentesque vel tempus magna. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vitae nibh sollicitudin, rhoncus nunc at, sollicitudin nibh. Fusce at enim consectetur tortor aliquam maximus ac ullamcorper leo. Proin consectetur nulla et rhoncus posuere. Proin gravida ut mi quis elementum. Suspendisse laoreet, eros in consectetur tristique, massa velit maximus sapien, sit amet porta dui ex sed leo. Etiam id est arcu.
+
+
+## General Instructions
+
+rubric={mechanics:3}
+
+> The Github repo for this lab can be found at [MDS-2021-22/DSCI_999_lab2_johnsmith](https://github.ubc.ca/MDS-2020-21/DSCI_999_lab2_johnsmith).
+
+-   All files necessary to run your work must be pushed to your **GitHub.ubc.ca** repository for this lab.
+-   You need to have a minimum of 3 commit messages associated with your **GitHub.ubc.ca** repository for this lab.
+-   You must also submit a `.html` version of this homework to Canvas.
+-   Follow the [MDS general lab instructions](https://ubc-mds.github.io/resources_pages/general_lab_instructions/).
+-   This assignment is to be completed in `R`.
+-   Make it easy for others to read and run your code. Use the *pipe* operator `%>%` whenever appropriate to help with code readability.
+-   For coding questions, ensure you display the output of the code object asked for in the questions.
+
+## Exercise 1: True or False?
+<hr>
+rubric={reasoning:5}
+
+Curabitur in mauris id sapien accumsan pretium nec non leo. Cras ipsum nulla, condimentum eget vulputate eu, rutrum vel nisl. Pellentesque luctus velit eu lacus malesuada auctor. Sed lobortis mauris eget sem fermentum lobortis. Cras bibendum magna risus, tincidunt placerat ex hendrerit et. Aenean sit amet lorem ac ante egestas pretium. Donec sed nisi risus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla ut erat id massa imperdiet congue sed ut lacus.
+
+
+
+> Your answer goes here.
+
+
+
+## Exercise 2: Exploratory Analysis
+
+### 2(a)
+rubric={reasoning:6}
+
+```{r a-block}
+1 + 4
+```
+
+
+
+### Optional 2(b)
+ rubric={reasoning:3}
+
+This one has a space before the rubric, and some latex blocks:
+
+$$
+y_i \sim \textrm{Normal}(0, 1)
+$$
+
+> Your answer goes here.
+
+
+
+### Optional 2(c)
+<br>
+rubric={reasoning:3}
+
+Quisque feugiat varius nunc ac pellentesque. Mauris pretium ante id nibh malesuada aliquam. Suspendisse bibendum ex sed sollicitudin bibendum. Suspendisse potenti. Donec auctor pharetra ultricies. Aliquam erat volutpat. Praesent in tincidunt nisl, sit amet blandit augue. Phasellus et est mollis, imperdiet orci ac, scelerisque est. Nullam mattis ultricies porttitor. Donec eu euismod purus, vitae luctus ipsum. Maecenas vitae ullamcorper felis. Integer felis sapien, commodo at metus ut, hendrerit imperdiet elit. In quis posuere libero.
+
+```{r another-block}
+x <- 1:20
+y <- x^2
+plot(x, y, type = "l")
+```
+
+
+> Your answer goes here.
+
+
+# Submission
+
+Congratulations! You are done the lab! Pat yourself on the back, render your notebook to `html` by clicking the knit button inside RStudio and submit your worksheet to both Canvas and GitHub!
+
+To programmatically submit the assignment to Canvas, open [submit.ipynb](submit.ipynb) and use the instructions there.

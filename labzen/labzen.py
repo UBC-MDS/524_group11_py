@@ -2,11 +2,14 @@ import os
 from pathlib import Path
 import pandas as pd
 import numpy as np
+from nbformat import read, NO_CONVERT
+import re
+import glob
 
 
-def parse_lab(file_name: str) -> list:
+def parse_lab(notebook=None):
+
     """Parse MDS lab files to return the markdown content
-
     Args:
         file_name (str): A path or list of paths to MDS lab files (either
             .ipynb or .Rmd). If left blank, the function will recursively
@@ -14,11 +17,63 @@ def parse_lab(file_name: str) -> list:
             extension.
     Returns:
         list: Each element of list is a content of one markdown cell.
-
     Example:
         parse_lab()
     """
-    return None
+
+    # If the user did not define the specific file, recursively
+    # search for rmd and ipynb files in the working directory
+    if notebook is None:
+        directory = os.getcwd()
+        types = ["*.ipynb", "*.Rmd"]
+        files = []
+        for type in types:
+            pathname = directory + "/**/*" + type
+            type_files = glob.glob(pathname, recursive=True)
+            files += type_files
+        names = [
+            str(n + 1) + "." + os.path.basename(file) for n, file in enumerate(files)
+        ]
+        print("The existing files are:")
+        for item in names:
+            print(item)
+        notebook = input(f"Enter your file number from the above list:")
+        notebook = files[int(notebook) - 1]
+    path = Path(notebook)
+    name, extension = os.path.splitext(notebook)
+
+    # defensive tests
+    if extension != ".Rmd" and extension != ".ipynb":
+        raise Exception(
+            "Sorry, you have not provided Rmarkdown or jupyter notebook file"
+        )
+
+    if not isinstance(notebook, str):
+        raise Exception("The file path should be string")
+
+    # Parse the markdown contents of rmd or ipynb file
+    source = []
+    if extension == ".Rmd":
+        text_and_code = path.read_text()
+        text_and_code = text_and_code.split("```")
+
+        code_blocks = []
+        for string in text_and_code:
+            if string.startswith("{r"):
+                code_blocks.append(string)
+            elif string.startswith("{python"):
+                code_blocks.append(string)
+            else:
+                source.append(string)
+    else:
+        with open(notebook, encoding="utf8") as file:
+            notebook = read(file, NO_CONVERT)
+            cells = notebook["cells"]
+            code_cells = [c for c in cells if c["cell_type"] == "markdown"]
+            for cell in code_cells:
+                source.append(cell["source"])
+
+    return source
 
 
 def count_points(file_name: str = None, margins: bool = True):
@@ -167,5 +222,3 @@ def check_mechanics(file_name: str) -> NoneType:
 
     """
     return None
-
-  
