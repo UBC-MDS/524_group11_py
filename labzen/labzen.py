@@ -72,6 +72,13 @@ def count_points(file_name: str = None, margins: bool = True):
     df["points"] = df2["points"].groupby(df2.index).apply(list)
     df["total"] = df["points"].apply(sum)
 
+    # defensive check
+    if not all(df["below_header"]):
+        raise Exception(
+            "There is a problem parsing this lab. Expecting a rubric tag to "
+            + "below a markdown header."
+        )
+
     # Tidy and make the result more human-readable
     booldict = {True: "Optional", False: "Non-Optional"}
     df["type"] = df["optional"].replace(booldict)
