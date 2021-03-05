@@ -31,6 +31,8 @@ The package data will include a directory of public and/or dummy lab files (.ipy
 
 To the authors' knowledge, no package yet exists in the Python ecosystem that serves this specific purpose. However, several existing packages will be used to power the functionality of `labzen`, including `GitPython`, `pandas`, and `nbformat`. Some other python repos and past assignments may be used as inspiration, such as the parsing work done in the _throughput database_ in DSCI 513.
 
+A parallel implementation for R exists [here](https://github.com/UBC-MDS/labzenr).
+
 ## Dependencies
 
 - TODO
