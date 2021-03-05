@@ -37,12 +37,12 @@ def test_count_points():
 
     # Test that the objects are the right dimension (ipynb)
     df, tab = lz.count_points(pyfile, margins=False)
-    assert tab.shape == (2, 2)
+    assert tab.shape == (2, 3)
     df, tab = lz.count_points(pyfile, margins=True)
-    assert tab.shape == (3, 2)
+    assert tab.shape == (3, 3)
 
     # Test that the objects are the right dimension (Rmd)
     df, tab = lz.count_points(rfile, margins=False)
-    assert tab.shape == (2, 2)
+    assert tab.shape == (2, 3)
     df, tab = lz.count_points(rfile, margins=True)
-    assert tab.shape == (3, 2)
+    assert tab.shape == (3, 3)

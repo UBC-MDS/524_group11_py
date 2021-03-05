@@ -143,6 +143,9 @@ def count_points(file_name: str = None, margins: bool = True):
     # Generate crosstab
     tab = df.pivot_table("total", "type", aggfunc=sum, margins=margins)
     tab = tab.reset_index()
+    one_pt_worth = 0.95 / tab.loc[tab["type"] == "Non-Optional", "total"]
+    tab["pct"] = tab["total"] * one_pt_worth[0]
+
     return df, tab
 
 
