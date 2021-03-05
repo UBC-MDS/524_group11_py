@@ -139,12 +139,22 @@ def count_points(file_name: str = None, margins: bool = True):
     df["type"] = df["optional"].replace(booldict)
     df = df.drop(columns=["rubric", "below_header", "optional"])
     df = df.reset_index(drop=True)
+    df["header"] = df["header"].str.replace(r"(^[#]+\s+)", "", regex=True)
 
     # Generate crosstab
     tab = df.pivot_table("total", "type", aggfunc=sum, margins=margins)
     tab = tab.reset_index()
     one_pt_worth = 0.95 / tab.loc[tab["type"] == "Non-Optional", "total"]
-    tab["pct"] = tab["total"] * one_pt_worth[0]
+    tab["prop"] = tab["total"] * one_pt_worth[0]
+
+    # add percent to full table
+    df["prop"] = df["total"] * one_pt_worth[0]
+
+    # simplify rubric names
+    df["rubric"] = df["txt"].str.findall(r"([a-z]+)(?=\:\d)")
+
+    # re-order columns
+    df = df[["block", "header", "rubric", "points", "total", "prop", "type"]]
 
     return df, tab
 
