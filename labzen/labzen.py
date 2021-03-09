@@ -7,6 +7,7 @@ import re
 import glob
 from github import Github
 import git
+import warnings
 
 
 def gettoken():
@@ -19,7 +20,8 @@ def gettoken():
     gettoken()
     """
     token = input(
-        "Enter a valid token generated from github.ubc.ca to get the details from remote: "
+        "Enter a valid token generated from github.ubc.ca to get the ",
+        "details from remote: ",
     )
     return token
 
@@ -54,12 +56,13 @@ def parse_lab(notebook=None):
             type_files = glob.glob(pathname, recursive=True)
             files += type_files
         names = [
-            str(n + 1) + "." + os.path.basename(file) for n, file in enumerate(files)
+            str(n + 1) + "." + os.path.basename(file)
+            for n, file in enumerate(files)
         ]
         print("The existing files are:")
         for item in names:
             print(item)
-        notebook = input(f"Enter your file number from the above list:")
+        notebook = input("Enter your file number from the above list:")
         notebook = files[int(notebook) - 1]
     path = Path(notebook)
     name, extension = os.path.splitext(notebook)
@@ -229,9 +232,12 @@ def check_repo_link(file_name: str = None):
     df = pd.DataFrame({"block": np.arange(1, len(res) + 1), "txt": res})
 
     # finding out if there is any link
-    rex = (
-        r"((https://)?(www.)?github\.ubc\.ca\/MDS-\d{4}-\d{2}\/DSCI_\d{3}_lab\d_[a-z]+)"
+    rex = re.compile(
+        r"((https://)?(www.)?github\.ubc\.ca"  # base url for GH Enterprise
+        r"\/MDS-\d{4}-\d{2}"  # organization
+        r"\/DSCI_\d{3}_lab\d_[a-z]+)"  # lab repo with CWL username
     )
+    warnings.filterwarnings("ignore", "This pattern has match groups")
     df["link"] = df["txt"].str.contains(rex, regex=True)
 
     # displaying the result in boolean
@@ -241,7 +247,7 @@ def check_repo_link(file_name: str = None):
         print(f"Check 3: {repo_link}")
     else:
         print("Check 3: Repository link is not included in the file")
-        print(f"Check 3:", False)
+        print("Check 3:", False)
 
     return repo_link
 
@@ -283,7 +289,9 @@ def check_lat_version(repo_name: str):
             print(last_remotecommit)
 
     # get the commit SHA from local repo
-    val = input("Enter the local repo path for comparing the lastest version of repo: ")
+    val = input(
+        "Enter the local repo path for comparing the lastest version of repo: "
+    )
     repo = git.Repo(val)
 
     commit_local = str(repo.head.commit)
@@ -292,10 +300,13 @@ def check_lat_version(repo_name: str):
     # comparing the both SHAs
     if last_remotecommit == commit_local:
         print("Check 2: Remote has the latest version of the repository")
-        print(f"Check 2: ", True)
+        print("Check 2: ", True)
     else:
-        print("Check 2: Remote does not have the latest version of the repository")
-        print(f"Check 2: ", False)
+        print(
+            "Check 2: Remote does not have the latest version of the ",
+            "repository",
+        )
+        print("Check 2: ", False)
     return last_remotecommit == commit_local
 
 
@@ -329,8 +340,8 @@ def check_commits(repo_name: str):
                 counter_invaliduser = 0
                 counter_validuser = 0
                 for commit in repo.get_commits():
-                    # comapring the username with the commit author to get the commits only
-                    # done by student's username
+                    # comapring the username with the commit author to get the
+                    # commits only done by student's username
                     if g.get_user().name == commit.author.name:
                         counter_validuser = counter_validuser + 1
                         print(
@@ -347,22 +358,26 @@ def check_commits(repo_name: str):
                 if counter_validuser >= 3:
 
                     print(
-                        f"Check 1: Repository has at least 3 commits with the student username"
+                        "Check 1: Repository has at least 3 commits with",
+                        " the student username",
                     )
-                    print(f"Check 1: ", True)
+                    print("Check 1: ", True)
 
                     break
 
                 if counter_invaliduser >= 3:
 
                     print(
-                        f"Check 1: Repository does not have 3 commits with the student username"
+                        "Check 1: Repository does not have 3 commits with the"
+                        "student username"
                     )
-                    print(f"Check 1: ", False)
+                    print("Check 1: ", False)
 
             else:
-                print(f"Check 1: Repository:{repo.name} has less than 3 commits")
-                print(f"Check 1: ", False)
+                print(
+                    f"Check 1: Repository:{repo.name} has less than 3 commits"
+                )
+                print("Check 1: ", False)
     return counter_validuser >= 3
 
 
@@ -380,6 +395,8 @@ def check_mechanics(repo_name: str, file_name: str = None):
             .ipynb or .Rmd). If left blank, the function will recursively
             search for all labs in the working directory based on the file
             extension.
+
+        repo_name (str) : A repo name present under https://github.ubc.ca
 
     Returns:
         bool : A boolean whether all checks passed. The function also prints

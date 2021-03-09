@@ -1,6 +1,5 @@
 from labzen import __version__
 from labzen import labzen as lz
-from pathlib import Path
 import pytest
 
 
@@ -37,7 +36,7 @@ def test_parse_lab():
     with pytest.raises(Exception):
         lz.parse_lab("lab1.csv")
     with pytest.raises(Exception):
-        lz.parse_lab(data - raw / dummylab.ipynb)
+        lz.parse_lab(99)
 
 
 def test_count_points():
@@ -86,6 +85,4 @@ def test_check_repo_link():
     with pytest.raises(Exception):
         lz.check_repo_link(4)
     with pytest.raises(Exception):
-        lz.check_repo_link(data - raw / dummylab.ipynb)
-
-
+        lz.check_repo_link("a_file_that_does_not_exist.ipynb")

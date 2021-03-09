@@ -27,7 +27,9 @@ sys.path.insert(0, os.path.abspath(".."))
 # -- Project information -----------------------------------------------------
 
 project = u"labzen"
-copyright = u"2021, Sukhdeep kaur, Rafael Pillard-Hellwig, Kamal Moravej Jahromi"
+copyright = (
+    u"2021, Sukhdeep kaur, Rafael Pillard-Hellwig, Kamal Moravej Jahromi",
+)
 author = u"Sukhdeep kaur, Rafael Pillard-Hellwig, Kamal Moravej Jahromi"
 
 # -- General configuration ---------------------------------------------
@@ -38,7 +40,11 @@ author = u"Sukhdeep kaur, Rafael Pillard-Hellwig, Kamal Moravej Jahromi"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.viewcode", "sphinx.ext.napoleon"]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.napoleon",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
