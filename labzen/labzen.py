@@ -403,7 +403,8 @@ def check_mechanics(repo_name: str, file_name: str = None):
             informative messages as side texts.
 
     Example:
-        check_mechanics("DSCI_599_lab1_jene3456", "/labzen/data-raw/dummylab.ipynb")
+        file = "/labzen/data-raw/dummylab.ipynb"
+        check_mechanics("DSCI_599_lab1_jene3456", file)
     """
 
     result = [
