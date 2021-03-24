@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/UBC-MDS/labzen/branch/main/graph/badge.svg)](https://codecov.io/gh/UBC-MDS/labzen) 
 [![Deploy](https://github.com/UBC-MDS/labzen/actions/workflows/deploy.yml/badge.svg)](https://github.com/UBC-MDS/labzen/actions/workflows/deploy.yml) 
 [![Documentation Status](https://readthedocs.org/projects/labzen/badge/?version=latest)](https://labzen.readthedocs.io/en/latest/?badge=latest)
-[![Project Status: Concept – Minimal or no implementation has been done yet](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#concept)
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 
 
 `labzen` is a Python package that adds more [zen](https://en.wikipedia.org/wiki/Zen) to your student experience of working on [MDS](https://masterdatascience.ubc.ca/) labs. It lets you manage common tasks such as counting total marks in an assigment, and performs common checks for mechanics in your iPython notebooks and R markdown assignments.
@@ -46,7 +46,7 @@ GitPython = "^3.1.14"
 glob2 = "^0.7"
 mock = "^4.0.3"
 ```
-Visit [pyproject.toml file](pyproject.toml) file for complete list of `labzen` dependencies.
+See the [pyproject.toml](pyproject.toml) file for complete list of `labzen` dependencies.
 ## Usage
 
 In order to show the usage of our package, we provided two dummy labs, one [Rmarkdown lab](https://github.com/UBC-MDS/labzen/blob/main/data-raw/dummylab.Rmd) and one [Jupyter notebook](https://github.com/UBC-MDS/labzen/blob/main/data-raw/dummylab.ipynb).
@@ -104,6 +104,24 @@ The official documentation is hosted on Read the Docs: https://labzen.readthedoc
 This package is authored by Sukhdeep Kaur, Kamal Moravej Jahromi, and Rafael Pilliard-Hellwig as part of an academic assignment in the UBC MDS program. For a full list of contributors, please see the [contributors tab](https://github.com/UBC-MDS/labzen/graphs/contributors). 
 
 We warmly welcome and recognize contributions from the community at large. If you wish to participate, please review our [contributing guidelines](CONTRIBUTING.rst) and familiarize yourself with [Github Flow](https://blog.programster.org/git-workflows).
+
+To make collaboration easier, we suggest you use git, anaconda, poetry, and pytest:
+
+```bash
+# clone the repo
+git clone https://github.com/UBC-MDS/labzen.git
+
+# create a fresh conda environment
+conda create -n labzen-env python=3 poetry -y
+conda activate labzen-env
+
+# install the package
+poetry install
+
+# test the package
+poetry run pytest
+```
+
 ### Credits
 
 This package was created with Cookiecutter and the UBC-MDS/cookiecutter-ubc-mds project template, modified from the [pyOpenSci/cookiecutter-pyopensci](https://github.com/pyOpenSci/cookiecutter-pyopensci) project template and the [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage).
