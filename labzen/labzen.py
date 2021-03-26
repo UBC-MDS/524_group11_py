@@ -34,9 +34,8 @@ def create_github_token(host="https://github.ubc.ca"):
         host (str):
             The URL to the upstream host. Defaults to UBC Github Enterprise.
     """
-    url = (
-        f"{host}/settings/tokens/new?scopes=repo,user,gist,workflow&description=LABZEN"
-    )
+    opts = "scopes=repo,user,gist,workflow&description=LABZEN"
+    url = f"{host}/settings/tokens/new?{opts}"
     webbrowser.open(url, new=2)
 
 
@@ -71,7 +70,8 @@ def parse_lab(notebook=None):
             type_files = glob.glob(pathname, recursive=True)
             files += type_files
         names = [
-            str(n + 1) + "." + os.path.basename(file) for n, file in enumerate(files)
+            str(n + 1) + "." + os.path.basename(file)
+            for n, file in enumerate(files)
         ]
         print("The existing files are:")
         for item in names:
@@ -307,7 +307,9 @@ def check_lat_version(repo_name: str):
             print(lst_rem_commit)
 
     # get the commit SHA from local repo
-    val = input("Enter the local repo path for comparing the lastest version of repo: ")
+    val = input(
+        "Enter the local repo path for comparing the lastest version of repo: "
+    )
     repo = git.Repo(val)
 
     commit_local = str(repo.head.commit)
@@ -396,7 +398,9 @@ def check_commits(repo_name: str):
                     print("Check 1: ", False)
 
             else:
-                print(f"Check 1: Repository:{repo.name} has less than 3 commits")
+                print(
+                    f"Check 1: Repository:{repo.name} has less than 3 commits"
+                )
                 print("Check 1: ", False)
     return counter_validuser >= 3
 
