@@ -5,16 +5,16 @@ Installation
 ============
 
 
-Stable release
+Development release
 --------------
 
-To install labzen, run this command in your terminal:
+To install ``labzen``, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install -u labzen
+    $ pip install labzen --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple
 
-This is the preferred method to install labzen, as it will always install the most recent stable release.
+This is the preferred method to install ``labzen``, as it will always install the most recent stable release.
 
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
@@ -23,10 +23,10 @@ you through the process.
 .. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
 
 
-From sources
-------------
+From source
+-----------
 
-The sources for labzen can be downloaded from the `Github repo`_.
+The source code for ``labzen`` can be downloaded from the `Github repo`_.
 
 You can either clone the public repository:
 
@@ -40,15 +40,7 @@ Or download the `tarball`_:
 
     $ curl  -OL https://github.com/UBC-MDS/labzen/tarball/main
 
-Once you have a copy of the source, you can install it. The method of installation will depend on the packaging library being used.
-
-For example, if `setuptools` is being used (a setup.py file is present), install labzen with:
-
-.. code-block:: console
-
-    $ python setup.py install
-
-If `poetry` is being used (poetry.lock and pyproject.toml files are present), install labzen with:
+Once you have a copy of the source, you can install it using poetry:
 
 .. code-block:: console
 
