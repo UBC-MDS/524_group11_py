@@ -49,6 +49,8 @@ mock = "^4.0.3"
 See the [pyproject.toml](pyproject.toml) file for complete list of `labzen` dependencies.
 ## Usage
 
+Start by generating a token for UBC's Github Enterprise account (instructions [here](https://labzen.readthedocs.io/en/latest/token.html)).
+
 In order to show the usage of our package, we provided two dummy labs, one [Rmarkdown lab](https://github.com/UBC-MDS/labzen/blob/main/data-raw/dummylab.Rmd) and one [Jupyter notebook](https://github.com/UBC-MDS/labzen/blob/main/data-raw/dummylab.ipynb).
 
 Clone labzen repository using the following command:

@@ -7,12 +7,14 @@ Generating a Github Token
 A Github token will be needed to successfully run several ``labzen`` functions.
 This token must be from UBC's Github Enterprise (GHE) site, not from Github.com.
 
-If you have ``labzen`` installed, you can generate a token by following the following 
-steps in Python:
+You can generate a new Github Enterprise personal access token `here <https://github.ubc.ca/settings/tokens/new?scopes=repo,user,gist,workflow&description=LABZEN>`_.
+Alternatively, if you have ``labzen`` installed and have a Python interpreter open, you can run:
 
 .. code-block:: python
 
     from labzen import labzen as lz
+    
+    # Open a web browser to generate a token
     lz.create_github_token()
 
 This will open up a browser to Github Enterprise.
