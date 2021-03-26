@@ -43,7 +43,8 @@ def create_github_token(host="https://github.ubc.ca"):
 def parse_lab(notebook=None):
     """Parse MDS lab files to return the markdown content
     Args:
-        file_name (str): A path or list of paths to MDS lab files (either
+        file_name (str):
+            A path or list of paths to MDS lab files (either
             .ipynb or .Rmd). If left blank, the function will recursively
             search for all labs in the working directory based on the file
             extension.
@@ -70,8 +71,7 @@ def parse_lab(notebook=None):
             type_files = glob.glob(pathname, recursive=True)
             files += type_files
         names = [
-            str(n + 1) + "." + os.path.basename(file)
-            for n, file in enumerate(files)
+            str(n + 1) + "." + os.path.basename(file) for n, file in enumerate(files)
         ]
         print("The existing files are:")
         for item in names:
@@ -307,9 +307,7 @@ def check_lat_version(repo_name: str):
             print(lst_rem_commit)
 
     # get the commit SHA from local repo
-    val = input(
-        "Enter the local repo path for comparing the lastest version of repo: "
-    )
+    val = input("Enter the local repo path for comparing the lastest version of repo: ")
     repo = git.Repo(val)
 
     commit_local = str(repo.head.commit)
@@ -398,9 +396,7 @@ def check_commits(repo_name: str):
                     print("Check 1: ", False)
 
             else:
-                print(
-                    f"Check 1: Repository:{repo.name} has less than 3 commits"
-                )
+                print(f"Check 1: Repository:{repo.name} has less than 3 commits")
                 print("Check 1: ", False)
     return counter_validuser >= 3
 
