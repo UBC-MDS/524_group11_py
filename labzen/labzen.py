@@ -9,6 +9,8 @@ from github import Github
 import git
 import warnings
 
+import webbrowser
+
 
 def gettoken():
     """Get the token as an input from the user
@@ -24,6 +26,18 @@ def gettoken():
         + "details from remote: ",
     )
     return token
+
+
+def create_github_token(host="https://github.ubc.ca"):
+    """Open A Browser to Generate a New Github Enterprise Token
+    Args:
+        host (str):
+            The URL to the upstream host. Defaults to UBC Github Enterprise.
+    """
+    url = (
+        f"{host}/settings/tokens/new?scopes=repo,user,gist,workflow&description=LABZEN"
+    )
+    webbrowser.open(url, new=2)
 
 
 def parse_lab(notebook=None):
