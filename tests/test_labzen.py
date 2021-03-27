@@ -69,8 +69,8 @@ def test_check_repo_link():
     rfile = "data-raw/dummylab.Rmd"
 
     # run the check for dummy files
-    py_link = lz.check_repo_link(pyfile)
-    r_link = lz.check_repo_link(rfile)
+    py_link = lz._check_repo_link(pyfile)
+    r_link = lz._check_repo_link(rfile)
 
     # Test that the return type is boolen
     assert type(py_link).__name__ == "bool_"
@@ -83,6 +83,6 @@ def test_check_repo_link():
 
     # Test if the function raise exception for a wrong input
     with pytest.raises(Exception):
-        lz.check_repo_link(4)
+        lz._check_repo_link(4)
     with pytest.raises(Exception):
-        lz.check_repo_link("a_file_that_does_not_exist.ipynb")
+        lz._check_repo_link("a_file_that_does_not_exist.ipynb")

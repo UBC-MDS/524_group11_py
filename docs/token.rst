@@ -1,8 +1,8 @@
 .. highlight:: python
 
-============
-Generating a Github Token
-============
+=========================
+Github Tokens
+=========================
 
 A Github token will be needed to successfully run several ``labzen`` functions.
 This token must be from UBC's Github Enterprise (GHE) site, not from Github.com.

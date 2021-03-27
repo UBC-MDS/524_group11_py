@@ -12,23 +12,7 @@ import warnings
 import webbrowser
 
 
-def gettoken():
-    """Get the token as an input from the user
-
-    Returns:
-        str : A token created on the https://github.ubc.ca
-
-    Example:
-    gettoken()
-    """
-    token = input(
-        "Enter a valid token generated from github.ubc.ca to get the "
-        + "details from remote: ",
-    )
-    return token
-
-
-def find_assignment(directory=None):
+def _find_assignment(directory=None):
     """Find an Assignment Dyamically
 
     A helper function to validate and locate the a lab file based on its
@@ -66,9 +50,17 @@ def find_assignment(directory=None):
 
 def create_github_token(host="https://github.ubc.ca"):
     """Open A Browser to Generate a New Github Enterprise Token
+
     Args:
         host (str):
             The URL to the upstream host. Defaults to UBC Github Enterprise.
+    Returns:
+        None
+
+    Examples:
+        >>> from labzen import labzen as lz
+        >>> # Open a web browser
+        >>> lz.create_github_token()
     """
     opts = "scopes=repo,user,gist,workflow&description=LABZEN"
     url = f"{host}/settings/tokens/new?{opts}"
@@ -77,28 +69,46 @@ def create_github_token(host="https://github.ubc.ca"):
 
 def parse_lab(notebook=None):
     """Parse MDS lab files to return the markdown content
+
     Args:
-        file_name (str):
-            A path or list of paths to MDS lab files (either
-            .ipynb or .Rmd). If left blank, the function will recursively
+        notebook (str):
+            A path or list of paths to MDS lab files (either .ipynb
+            or .Rmd). If left blank, the function will recursively
             search for all labs in the working directory based on the file
             extension.
+
     Returns:
         list: Each element of list is a content of one markdown cell.
-    Example:
-        >>> # Navigate to the root of labzen repo to test the package
-        >>> # using dummy files (dummylab.ipynb and dummylab.Rmd).
-        >>> parse_lab("data-raw/dummylab.ipynb")
-        >>> parse_lab("data-raw/dummylab.Rmd")
 
+    Example:
+        >>> # Download the demo files into the working directory
+        >>> import urllib.request
+        >>> from labzen import labzen as lz
+        >>>
+        >>> baseurl = (
+        >>>     "https://raw.githubusercontent.com"
+        >>>     + "/UBC-MDS/labzen/main/data-raw"
+        >>> )
+        >>> labs = {
+        >>>     "dummylab.Rmd": f"{baseurl}/dummylab.Rmd",
+        >>>     "dummylab.ipynb": f"{baseurl}/dummylab.ipynb",
+        >>> }
+        >>>
+        >>> for name, url in labs.items():
+        >>>     urllib.request.urlretrieve(url, name)
+        >>>
+        >>> # parse the labs
+        >>> lz.parse_lab("dummylab.ipynb")
+        >>> lz.parse_lab("dummylab.Rmd")
+        >>>
         >>> # Alternatively, navigate to a student assignment repo and
         >>> # run the following code.
-        >>> parse_lab()
+        >>> lz.parse_lab()
     """
     # If the user did not define the specific file, recursively
     # search for rmd and ipynb files in the working directory
     if notebook is None:
-        notebook = find_assignment()
+        notebook = _find_assignment()
     path = Path(notebook)
     _, extension = os.path.splitext(notebook)
 
@@ -154,24 +164,48 @@ def count_points(file_name: str = None, margins: bool = True):
             number of optional, required, and total points per lab.
 
     Example:
-        >>> # Navigate to the root of labzen repo and run the following code
-        >>> # using the dummy files:
+        >>> from labzen import labzen as lz
+        >>> import urllib.request
         >>>
-        >>> # for jupyter notebook:
-        >>> df, tab = count_points("data-raw/dummylab.ipynb")
-        >>> print(df)
+        >>> # Download the demo files into the working directory
+        >>> baseurl = (
+        >>>     "https://raw.githubusercontent.com"
+        >>>     + "/UBC-MDS/labzen/main/data-raw"
+        >>> )
+        >>> labs = {
+        >>>     "dummylab.Rmd": f"{baseurl}/dummylab.Rmd",
+        >>>     "dummylab.ipynb": f"{baseurl}/dummylab.ipynb",
+        >>> }
+        >>> for name, url in labs.items():
+        >>>     urllib.request.urlretrieve(url, name)
+        >>>
+        >>> # for Jupyter notebooks:
+        >>> df, tab = lz.count_points("dummylab.ipynb")
+        >>> print(df[["rubric", "points", "type"]])
+                        rubric  points          type
+        0            [mechanics]     [5]  Non-Optional
+        1            [reasoning]     [4]  Non-Optional
+        2  [accuracy, reasoning]  [3, 2]  Non-Optional
+        3  [accuracy, reasoning]  [6, 4]      Optional
+        4  [accuracy, reasoning]  [7, 3]      Optional
+        5                  [viz]     [5]  Non-Optional
         >>> print(tab)
+                   type  total  prop
+        0  Non-Optional     19  0.95
+        1      Optional     20  1.00
+        2           All     39  1.95
         >>>
         >>> # for Rmarkdown:
-        >>> df, tab = count_points("data-raw/dummylab.Rmd")
-        >>> print(df)
+        >>> df, tab = lz.count_points("dummylab.Rmd")
         >>> print(tab)
+                type  total      prop
+        0  Non-Optional     42  0.950000
+        1      Optional     12  0.271429
+        2           All     54  1.221429
         >>>
         >>> # Alternatively, navigate to a student assignment repo and run the
         >>> # following code.
-        >>> df, tab = count_points()
-        >>> print(df)
-        >>> print(tab)
+        >>> df, tab = lz.count_points()
     """
     # Parse a lab file into its markdown blocks
     res = parse_lab(file_name)
@@ -233,7 +267,7 @@ def count_points(file_name: str = None, margins: bool = True):
     return df, tab
 
 
-def check_repo_link(file_name: str = None):
+def _check_repo_link(file_name: str = None):
     """Check whether the user has included the github repo link in his/her
         repository
 
@@ -252,14 +286,14 @@ def check_repo_link(file_name: str = None):
         >>> # using the dummy files:
         >>>
         >>> # for jupyter notebook:
-        >>> check_repo_link("data-raw/dummylab.ipynb")
+        >>> _check_repo_link("data-raw/dummylab.ipynb")
         >>>
         >>> # for Rmarkdown:
-        >>> check_repo_link("data-raw/dummylab.Rmd")
+        >>> _check_repo_link("data-raw/dummylab.Rmd")
         >>>
         >>> # Alternatively, navigate to a student assignment repo and run the
         >>> # following code.
-        >>> check_repo_link()
+        >>> _check_repo_link()
     """
 
     # Parse a lab file into its markdown blocks
@@ -288,35 +322,31 @@ def check_repo_link(file_name: str = None):
     return repo_link
 
 
-def check_lat_version(path: str, token: str):
+def _check_lat_version(path: str, token: str):
     """Check whether the user has pushed the latest version in his/her
         repository
 
     Args:
         path (str): A local file path to either a lab directory or to a
             lab file inside a local git directory.
-        token (str): A token for
+        token (str): A token for https://github.ubc.ca
 
     Returns:
         bool: a boolean output
 
     Example:
-        >>> # This function is still under development and difficult to test.
-        >>> # You will need a github token from github.ubc.ca.
-        >>> token = gettoken()
-        >>> check_lat_version("DSCI_599_lab1_jene3456")
-        >>> # This will ask for a local git path:
-        >>> # for macos provide the path to following path style:
-        >>> # /Users/jene/MDS/Block5/lab/DSCI_599_lab1_jene3456
-        >>> # for windows provide the following pathe format:
-        >>> # C:\\Users\\jene\\MDS\\Block5\\lab\\DSCI_599_lab1_jene3456
+        >>> from labzen import labzen as lz
+        >>>
+        >>> # navigate to a student repo and run:
+        >>> token = "544c96ce0d3dc9b66ac8d70b32c07bd0c46129db"
+        >>> lz._check_lat_version(token=token)
     """
     # locate the repo root
     local_repo = git.Repo(path, search_parent_directories=True)
 
     # locate the Github Enterprise repo name
     ghe = Github(token, base_url="https://github.ubc.ca/api/v3")
-    ghe_repo = ghe.get_repo(find_ghe_repo(local_repo))
+    ghe_repo = ghe.get_repo(__find_ghe_repo(local_repo))
 
     # find latest commit on GHE
     ghe_commit = ghe_repo.get_commits()[0].sha
@@ -337,8 +367,8 @@ def check_lat_version(path: str, token: str):
     return ghe_commit == local_commit
 
 
-def find_ghe_repo(local_repo, org="MDS-2020-21"):
-    """[summary]
+def __find_ghe_repo(local_repo, org="MDS-2020-21"):
+    """Find a Github Repo Path
 
     Args:
         local_repo ([git.repo.base.Repo]): A local Github repository
@@ -357,7 +387,7 @@ def find_ghe_repo(local_repo, org="MDS-2020-21"):
     return f"{org}/{ghe_name}"
 
 
-def check_commits(path: str, token: str, verbose=False):
+def _check_commits(path: str, token: str, verbose=False):
     """Check whether the user has at least three commits
 
     Args:
@@ -369,15 +399,11 @@ def check_commits(path: str, token: str, verbose=False):
         bool: a boolean output
 
     Example:
-        >>> # This function is still under development and difficult to test.
-        >>> # You will need a github token from github.ubc.ca.
-        >>> token = gettoken()
-        >>> check_commits("DSCI_599_lab1_jene3456")
-        >>> # This will ask for a local git path:
-        >>> # for macos provide the path to following path style:
-        >>> # /Users/jene/MDS/Block5/lab/DSCI_599_lab1_jene3456
-        >>> # for windows provide the following pathe format:
-        >>> # C:\\Users\\jene\\MDS\\Block5\\lab\\DSCI_599_lab1_jene3456
+        >>> from labzen import labzen as lz
+        >>>
+        >>> path = "/Users/jene/MDS/Block5/lab/DSCI_599_lab1_jene3456"
+        >>> token = "544c96ce0d3dc9b66ac8d70b32c07bd0c46129db"
+        >>> lz._check_commits(path, token)
     """
 
     # locate the repo root
@@ -385,11 +411,13 @@ def check_commits(path: str, token: str, verbose=False):
 
     # locate the Github Enterprise repo name
     ghe = Github(token, base_url="https://github.ubc.ca/api/v3")
-    ghe_name = find_ghe_repo(local_repo)
+
     try:
+        # org/repo_name
+        ghe_name = __find_ghe_repo(local_repo)
         ghe_repo = ghe.get_repo(ghe_name)
     except Exception:
-        raise Exception(f"'{ghe_name}' not found on github.ubc.ca")
+        raise Exception(f"{ghe_name} not found on github.ubc.ca")
 
     # count the total number of commits on the remote
     ghe_commits = ghe_repo.get_commits()
@@ -437,35 +465,47 @@ def check_commits(path: str, token: str, verbose=False):
     return check_result
 
 
-def check_mechanics(path: str = None, file_name: str = None, token=None):
+def check_mechanics(path: str = None, token=None):
     """Performs Mechanics Checks on a MDS Lab
-       This function check that you have a Github repo link, that you have
-       pushed your latest commit, and that you have at least three commit
-       messages authored by you in your history.
+
+       This function checks that you...
+        1. ... have a Github repo link;
+        2. ... have pushed your latest commit; and
+        3. ... have at least three commit messages authored by you in
+            your history.
 
     Args:
-        path (str) : A repo name present under https://github.ubc.ca.
-            For the moment this variable should be provided by the user.
+        path (str): A local path to a Github directory or an MDS lab file
+            (.ipynb or .Rmd) within such a directory.
 
-        file_name (str): A path or list of paths to MDS lab files (either
-            .ipynb or .Rmd). If left blank, the function will recursively
-            search for all labs in the working directory based on the file
-            extension.
-
-        repo_name (str) : A repo name present under https://github.ubc.ca
+        token (str) : A personal access token for https://github.ubc.ca. See
+            ``create_github_token()`` for details.
 
     Returns:
         bool : A boolean whether all checks passed. The function also prints
-            informative messages as side texts.
+            informative messages as a side effect.
 
     Example:
-        >>> file = "/labzen/data-raw/dummylab.ipynb"
-        >>> check_mechanics("DSCI_599_lab1_jene3456", file)
-        >>> # This will ask for a local git path:
-        >>> # for macos provide the path to following path style:
-        >>> # /Users/jene/MDS/Block5/lab/DSCI_599_lab1_jene3456
-        >>> # for windows provide the following pathe format:
-        >>> # C:\\Users\\jene\\MDS\\Block5\\lab\\DSCI_599_lab1_jene3456
+        >>> from labzen import labzen as lz
+        >>>
+        >>> # Step 1: get a token
+        >>> lz.create_github_token()
+        >>>
+        >>> # Step 2: check mechanics
+        >>> file = "~/MDS/Block5/lab1/DSCI_599_lab1_jene3456"
+        >>> token = "544c96ce0d3dc9b66ac8d70b32c07bd0c46129db"
+        >>> lz.check_mechanics(file, token)
+        Check 1: Repository has at least 3 commits with the student
+        username JENE SMITH
+        Check 1: True
+        Check 2: Remote has the latest version of the repository
+        Check 2: True
+        Check 3: Repository link is included in the file
+        Check 3: True
+        >>>
+        >>> # Alternatively, just run the following from an MDS lab directory:
+        >>> lz.check_mechanics(token = token)
+
     """
     # use the current working directory if no path given
     if path is None:
@@ -479,12 +519,12 @@ def check_mechanics(path: str = None, file_name: str = None, token=None):
     if extension == ".Rmd" or extension == ".ipynb":
         lab_path = path
     else:
-        lab_path = find_assignment(path)
+        lab_path = _find_assignment(path)
 
     result = [
-        check_commits(repo_path, token=token),
-        check_lat_version(repo_path, token=token),
-        check_repo_link(lab_path),
+        _check_commits(repo_path, token=token),
+        _check_lat_version(repo_path, token=token),
+        _check_repo_link(lab_path),
     ]
 
     return all(result)

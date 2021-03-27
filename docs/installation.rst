@@ -6,7 +6,7 @@ Installation
 
 
 Development release
---------------
+-------------------
 
 To install ``labzen``, run this command in your terminal:
 
