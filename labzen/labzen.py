@@ -28,6 +28,42 @@ def gettoken():
     return token
 
 
+def find_assignment(directory=None):
+    """Find an Assignment Dyamically
+
+    A helper function to validate and locate the a lab file based on its
+    extension being Rmd ipynb. The utility will search recursively up the
+    directory. If multiple candidate files are found, the user will be
+    prompted to select which file they wish.
+
+    Args:
+        directory ([type], optional): A directory path to be searched
+            recursively. If None given, will use the working directory.
+
+    Returns:
+        [str]: A path to the file selected.
+    """
+    if directory is None:
+        directory = os.getcwd()
+
+    types = ["*.ipynb", "*.Rmd"]
+    files = []
+    for type in types:
+        pathname = directory + "/**/*" + type
+        type_files = glob.glob(pathname, recursive=True)
+        files += type_files
+    names = [
+        str(n + 1) + "." + os.path.basename(file)
+        for n, file in enumerate(files)
+    ]
+    print("The existing files are:")
+    for item in names:
+        print(item)
+    notebook = input("Enter your file number from the above list:")
+    notebook = files[int(notebook) - 1]
+    return notebook
+
+
 def create_github_token(host="https://github.ubc.ca"):
     """Open A Browser to Generate a New Github Enterprise Token
     Args:
@@ -62,24 +98,9 @@ def parse_lab(notebook=None):
     # If the user did not define the specific file, recursively
     # search for rmd and ipynb files in the working directory
     if notebook is None:
-        directory = os.getcwd()
-        types = ["*.ipynb", "*.Rmd"]
-        files = []
-        for type in types:
-            pathname = directory + "/**/*" + type
-            type_files = glob.glob(pathname, recursive=True)
-            files += type_files
-        names = [
-            str(n + 1) + "." + os.path.basename(file)
-            for n, file in enumerate(files)
-        ]
-        print("The existing files are:")
-        for item in names:
-            print(item)
-        notebook = input("Enter your file number from the above list:")
-        notebook = files[int(notebook) - 1]
+        notebook = find_assignment()
     path = Path(notebook)
-    name, extension = os.path.splitext(notebook)
+    _, extension = os.path.splitext(notebook)
 
     # defensive tests
     if extension != ".Rmd" and extension != ".ipynb":
@@ -93,7 +114,7 @@ def parse_lab(notebook=None):
     # Parse the markdown contents of rmd or ipynb file
     source = []
     if extension == ".Rmd":
-        text_and_code = path.read_text()
+        text_and_code = path.expanduser().read_text()
         text_and_code = text_and_code.split("```")
 
         code_blocks = []
@@ -217,7 +238,8 @@ def check_repo_link(file_name: str = None):
         repository
 
     Args:
-        file_name (str): A path or list of paths to MDS lab files (either
+        file_name (str):
+            A path or list of paths to MDS lab files (either
             .ipynb or .Rmd). If left blank, the function will recursively
             search for all labs in the working directory based on the file
             extension.
@@ -266,12 +288,14 @@ def check_repo_link(file_name: str = None):
     return repo_link
 
 
-def check_lat_version(repo_name: str):
+def check_lat_version(path: str, token: str):
     """Check whether the user has pushed the latest version in his/her
         repository
 
     Args:
-        repo_name (str): A repo name present under https://github.ubc.ca
+        path (str): A local file path to either a lab directory or to a
+            lab file inside a local git directory.
+        token (str): A token for
 
     Returns:
         bool: a boolean output
@@ -287,52 +311,59 @@ def check_lat_version(repo_name: str):
         >>> # for windows provide the following pathe format:
         >>> # C:\\Users\\jene\\MDS\\Block5\\lab\\DSCI_599_lab1_jene3456
     """
-    # get the token from https://github.ubc.ca
-    global token
-    token = gettoken()
-    g = Github(token, base_url="https://github.ubc.ca/api/v3")
-    org = g.get_organization("MDS-2020-21")
+    # locate the repo root
+    local_repo = git.Repo(path, search_parent_directories=True)
 
-    # get the repo name and and the last commit from the remote
-    for repo in org.get_repos(type="all"):
-        lst_rem_commit = ""
-        if repo.name == repo_name:
-            print(repo.name)
-            commit_remote = repo.get_commits()
-            lst_rem_commit = str(commit_remote[0])
-            lst_rem_commit = lst_rem_commit.str.replace("Commit(sha=", "")
-            lst_rem_commit = lst_rem_commit.str.replace('"', "")
-            lst_rem_commit = lst_rem_commit.str.replace(")", "")
+    # locate the Github Enterprise repo name
+    ghe = Github(token, base_url="https://github.ubc.ca/api/v3")
+    ghe_repo = ghe.get_repo(find_ghe_repo(local_repo))
 
-            print(lst_rem_commit)
+    # find latest commit on GHE
+    ghe_commit = ghe_repo.get_commits()[0].sha
 
-    # get the commit SHA from local repo
-    val = input(
-        "Enter the local repo path for comparing the lastest version of repo: "
-    )
-    repo = git.Repo(val)
-
-    commit_local = str(repo.head.commit)
-    print(commit_local)
+    # find the latest local commit
+    local_commit = str(local_repo.head.commit)
 
     # comparing the both SHAs
-    if lst_rem_commit == commit_local:
+    if ghe_commit == local_commit:
         print("Check 2: Remote has the latest version of the repository")
-        print("Check 2: ", True)
+        print("Check 2:", True)
     else:
         print(
             "Check 2: Remote does not have the latest version of the ",
             "repository",
         )
-        print("Check 2: ", False)
-    return lst_rem_commit == commit_local
+        print("Check 2:", False)
+    return ghe_commit == local_commit
 
 
-def check_commits(repo_name: str):
+def find_ghe_repo(local_repo, org="MDS-2020-21"):
+    """[summary]
+
+    Args:
+        local_repo ([git.repo.base.Repo]): A local Github repository
+        org (str): The name of the organization on Github Enterprise to search.
+            Defaults to 'MDS-2020-21'.
+
+    Returns:
+        [type]: [github.Repository.Repository] An UBC GHE remote (student
+            project repo).
+    """
+    # find the name of the repo on Github Enterprise
+    remote_urls = [list(x.urls)[0] for x in local_repo.remotes]
+    rex = "([A-Za-z0-9_-]+)(?=\\.git$)"
+    ghe_name = list(set([re.search(rex, x).group(1) for x in remote_urls]))[0]
+
+    return f"{org}/{ghe_name}"
+
+
+def check_commits(path: str, token: str, verbose=False):
     """Check whether the user has at least three commits
 
     Args:
-        file_name (str): A repo name present under https://github.ubc.ca
+        path (str): A local repo path or local file path to a lab.git
+        token (str): A token for Github Enterprise.
+        verbose (bool): Whether to print commit details to screen
 
     Returns:
         bool: a boolean output
@@ -348,71 +379,72 @@ def check_commits(repo_name: str):
         >>> # for windows provide the following pathe format:
         >>> # C:\\Users\\jene\\MDS\\Block5\\lab\\DSCI_599_lab1_jene3456
     """
-    # get the token from https://github.ubc.ca
 
-    # token = gettoken()
-    g = Github(token, base_url="https://github.ubc.ca/api/v3")
-    org = g.get_organization("MDS-2020-21")
+    # locate the repo root
+    local_repo = git.Repo(path, search_parent_directories=True)
 
-    # get the repo name and commits
-    for repo in org.get_repos(type="all"):
-        counter_invaliduser = 0
-        counter_validuser = 0
-        if repo.name == repo_name:
-            print(repo.name)
+    # locate the Github Enterprise repo name
+    ghe = Github(token, base_url="https://github.ubc.ca/api/v3")
+    ghe_name = find_ghe_repo(local_repo)
+    try:
+        ghe_repo = ghe.get_repo(ghe_name)
+    except Exception:
+        raise Exception(f"'{ghe_name}' not found on github.ubc.ca")
 
-            if repo.get_commits().totalCount >= 3:
+    # count the total number of commits on the remote
+    ghe_commits = ghe_repo.get_commits()
+    ghe_commit_n = ghe_commits.totalCount
 
-                for commit in repo.get_commits():
-                    # comapring the username with the commit author to get the
-                    # commits only done by student's username
-                    if g.get_user().name == commit.author.name:
-                        counter_validuser = counter_validuser + 1
-                        print(
-                            commit,
-                            commit.commit.committer,
-                            commit.commit.author.email,
-                            commit.commit.author.date,
-                            commit.author.name,
-                        )
+    if ghe_commit_n > 3:
+        student_name = ghe.get_user().name
+        student_commits_n = 0
+        for commit in ghe_commits:
+            if student_name == commit.author.name:
+                student_commits_n += 1
 
-                    else:
-                        counter_invaliduser = counter_invaliduser + 1
-
-                if counter_validuser >= 3:
-
+                if verbose:
                     print(
-                        "Check 1: Repository has at least 3 commits with",
-                        " the student username",
+                        commit,
+                        commit.commit.committer,
+                        commit.commit.author.email,
+                        commit.commit.author.date,
+                        commit.author.name,
                     )
-                    print("Check 1: ", True)
+        check_result = student_commits_n > 3
+    else:
+        check_result = False
 
-                    break
+    # print check result to screen
+    if check_result:
+        print(
+            "Check 1: Repository has at least 3 commits with the",
+            f"student username {student_name}",
+        )
+        print("Check 1:", check_result)
+    elif student_commits_n < 3:
+        print(
+            "Check 1: Repository does not have 3 commits with the"
+            f"student username {student_name}"
+        )
+        print("Check 1:", check_result)
+    else:
+        print(
+            f"Check 1: Repo {ghe_repo.name} has fewer than 3 commits",
+            f"with the student username {student_name}",
+        )
+        print("Check 1:", check_result)
 
-                if counter_invaliduser >= 3:
-
-                    print(
-                        "Check 1: Repository does not have 3 commits with the"
-                        "student username"
-                    )
-                    print("Check 1: ", False)
-
-            else:
-                print(
-                    f"Check 1: Repository:{repo.name} has less than 3 commits"
-                )
-                print("Check 1: ", False)
-    return counter_validuser >= 3
+    return check_result
 
 
-def check_mechanics(repo_name: str, file_name: str = None):
+def check_mechanics(path: str = None, file_name: str = None, token=None):
     """Performs Mechanics Checks on a MDS Lab
        This function check that you have a Github repo link, that you have
        pushed your latest commit, and that you have at least three commit
        messages authored by you in your history.
 
     Args:
-        repo_name (str) : A repo name present under https://github.ubc.ca.
+        path (str) : A repo name present under https://github.ubc.ca.
             For the moment this variable should be provided by the user.
 
         file_name (str): A path or list of paths to MDS lab files (either
@@ -435,11 +467,24 @@ def check_mechanics(repo_name: str, file_name: str = None):
         >>> # for windows provide the following pathe format:
         >>> # C:\\Users\\jene\\MDS\\Block5\\lab\\DSCI_599_lab1_jene3456
     """
+    # use the current working directory if no path given
+    if path is None:
+        path = os.getcwd()
+
+    # local the repo root
+    repo_path = git.Repo(path, search_parent_directories=True).git_dir
+
+    # local lab file
+    _, extension = os.path.splitext(path)
+    if extension == ".Rmd" or extension == ".ipynb":
+        lab_path = path
+    else:
+        lab_path = find_assignment(path)
 
     result = [
-        check_lat_version(repo_name),
-        check_commits(repo_name),
-        check_repo_link(file_name),
+        check_commits(repo_path, token=token),
+        check_lat_version(repo_path, token=token),
+        check_repo_link(lab_path),
     ]
 
     return all(result)
