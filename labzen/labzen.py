@@ -33,9 +33,12 @@ def _find_assignment(directory=None):
     types = ["*.ipynb", "*.Rmd"]
     files = []
     for type in types:
-        pathname = directory + "/**/*" + type
+        path = str(Path(directory).expanduser())
+        # path = str(directory)
+        pathname = path + "/**/*" + type
         type_files = glob.glob(pathname, recursive=True)
         files += type_files
+
     names = [
         str(n + 1) + "." + os.path.basename(file)
         for n, file in enumerate(files)
@@ -427,7 +430,13 @@ def _check_commits(path: str, token: str, verbose=False):
         student_name = ghe.get_user().name
         student_commits_n = 0
         for commit in ghe_commits:
-            if student_name == commit.author.name:
+            valid_names = set()
+            if hasattr(commit.author, "name"):
+                valid_names.add(commit.author.name)
+            if hasattr(commit.committer, "name"):
+                valid_names.add(commit.committer.name)
+
+            if student_name in valid_names:
                 student_commits_n += 1
 
                 if verbose:
@@ -445,19 +454,19 @@ def _check_commits(path: str, token: str, verbose=False):
     # print check result to screen
     if check_result:
         print(
-            "Check 1: Repository has at least 3 commits with the",
+            "Check 1: Repository has at least 3 commits with the ",
             f"student username {student_name}",
         )
         print("Check 1:", check_result)
     elif student_commits_n < 3:
         print(
-            "Check 1: Repository does not have 3 commits with the"
+            "Check 1: Repository does not have 3 commits with the "
             f"student username {student_name}"
         )
         print("Check 1:", check_result)
     else:
         print(
-            f"Check 1: Repo {ghe_repo.name} has fewer than 3 commits",
+            f"Check 1: Repo {ghe_repo.name} has fewer than 3 commits ",
             f"with the student username {student_name}",
         )
         print("Check 1:", check_result)
