@@ -83,7 +83,7 @@ From the root of the repository/ working directory run the following python code
 >>> df
 ```
 
-![](docs/img/extract_points.jpg)
+![](docs/img/extract_points.JPG)
 
 
 The table above shows that there are 6 sections in this lab, and whether these points are optional or not. The total number of points is shown in the total column. Since requires quesitons only are meant to get you to a 95% grade, the optionals may imply a total percentage that is less than (or more) than 100% in the prop column. For convenience, the total marks can also be viewed via:
@@ -91,7 +91,7 @@ The table above shows that there are 6 sections in this lab, and whether these p
 ```python
 tab
 ```
-![](docs/img/total_points.jpg)
+![](docs/img/total_points.JPG)
 
 
 In order to use `check_mechanics`, you need to provide the following arguments to the function: 
